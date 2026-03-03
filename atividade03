@@ -1,0 +1,185 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void printArray(int arr[], int n) {
+    for(int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+void copiarArray(int origem[], int destino[], int n) {
+    for(int i = 0; i < n; i++) {
+        destino[i] = origem[i];
+    }
+}
+
+void bubbleSort(int arr[], int n) {
+    for(int i = 0; i < n - 1; i++) {
+        for(int j = 0; j < n - i - 1; j++) {
+            if(arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void selectionSort(int arr[], int n) {
+    for(int i = 0; i < n - 1; i++) {
+        int min = i;
+        for(int j = i + 1; j < n; j++) {
+            if(arr[j] < arr[min]) {
+                min = j;
+            }
+        }
+        int temp = arr[i];
+        arr[i] = arr[min];
+        arr[min] = temp;
+    }
+}
+
+void insertionSort(int arr[], int n) {
+    for(int i = 1; i < n; i++) {
+        int chave = arr[i];
+        int j = i - 1;
+
+        while(j >= 0 && arr[j] > chave) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = chave;
+    }
+}
+
+void quickSort(int arr[], int inicio, int fim) {
+    if(inicio < fim) {
+        int pivo = arr[fim];
+        int i = inicio - 1;
+
+        for(int j = inicio; j < fim; j++) {
+            if(arr[j] < pivo) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[fim];
+        arr[fim] = temp;
+
+        int posicaoPivo = i + 1;
+
+        quickSort(arr, inicio, posicaoPivo - 1);
+        quickSort(arr, posicaoPivo + 1, fim);
+    }
+}
+
+void merge(int arr[], int inicio, int meio, int fim) {
+    int i = inicio;
+    int j = meio + 1;
+    int k = 0;
+    int tamanho = fim - inicio + 1;
+
+    int temp[tamanho];
+
+    while(i <= meio && j <= fim) {
+        if(arr[i] < arr[j]) {
+            temp[k++] = arr[i++];
+        } else {
+            temp[k++] = arr[j++];
+        }
+    }
+
+    while(i <= meio) {
+        temp[k++] = arr[i++];
+    }
+
+    while(j <= fim) {
+        temp[k++] = arr[j++];
+    }
+
+    for(i = inicio, k = 0; i <= fim; i++, k++) {
+        arr[i] = temp[k];
+    }
+}
+
+void mergeSort(int arr[], int inicio, int fim) {
+    if(inicio < fim) {
+        int meio = (inicio + fim) / 2;
+        mergeSort(arr, inicio, meio);
+        mergeSort(arr, meio + 1, fim);
+        merge(arr, inicio, meio, fim);
+    }
+}
+
+void gerarArrayAleatorio(int arr[], int n) {
+    for(int i = 0; i < n; i++) {
+        arr[i] = rand() % 10000;
+    }
+}
+
+int main() {
+    int opcao;
+    int tamanho;
+
+    printf("Digite o tamanho do array: ");
+    scanf("%d", &tamanho);
+
+    int original[tamanho];
+    int copia[tamanho];
+
+    srand(time(NULL));
+    gerarArrayAleatorio(original, tamanho);
+
+    printf("\nArray original:\n");
+    printArray(original, tamanho);
+
+    printf("\nEscolha o algoritmo:\n");
+    printf("1 - Bubble Sort\n");
+    printf("2 - Selection Sort\n");
+    printf("3 - Insertion Sort\n");
+    printf("4 - Quick Sort\n");
+    printf("5 - Merge Sort\n");
+    printf("Opcao: ");
+    scanf("%d", &opcao);
+
+    copiarArray(original, copia, tamanho);
+
+    clock_t inicio = clock();
+
+    switch(opcao) {
+        case 1:
+            bubbleSort(copia, tamanho);
+            break;
+        case 2:
+            selectionSort(copia, tamanho);
+            break;
+        case 3:
+            insertionSort(copia, tamanho);
+            break;
+        case 4:
+            quickSort(copia, 0, tamanho - 1);
+            break;
+        case 5:
+            mergeSort(copia, 0, tamanho - 1);
+            break;
+        default:
+            printf("Opcao invalida.\n");
+            return 1;
+    }
+
+    clock_t fim = clock();
+    double tempo = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+
+    printf("\nArray ordenado:\n");
+    printArray(copia, tamanho);
+
+    printf("\nTempo de execucao: %f segundos\n", tempo);
+
+    return 0;
+}
